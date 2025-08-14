@@ -13,7 +13,7 @@ export default function CareerSyncLogin() {
 
   const navigate = useNavigate();
 
-  const API_BASE = import.meta.env.BACKEND_HOST || "https://careersync-39yq.onrender.com/";
+  const API_BASE = import.meta.env.BACKEND_HOST || "https://careersync-39yq.onrender.com";
 
   const handleSubmit = async () => {
     setLoading(true);
@@ -22,7 +22,7 @@ export default function CareerSyncLogin() {
 
     try {
       const { data } = await axios.post(
-        `${API_BASE}user/login`,
+        `${API_BASE}/user/login`,
         { email, password },
         {
           headers: {

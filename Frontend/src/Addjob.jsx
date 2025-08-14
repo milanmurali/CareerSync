@@ -37,7 +37,7 @@ export default function AddJob() {
   const [success, setSuccess] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const API_BASE = import.meta.env.BACKEND_HOST || "https://careersync-39yq.onrender.com/";
+  const API_BASE = import.meta.env.BACKEND_HOST || "https://careersync-39yq.onrender.com";
 
   const handleSubmit = async () => {
     setLoading(true);
@@ -64,7 +64,7 @@ export default function AddJob() {
     };
 
     try {
-      const res = await fetch(`${API_BASE}/jobs/create`, {
+      const res = await fetch(`${API_BASE}jobs/create`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
