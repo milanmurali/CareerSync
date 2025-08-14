@@ -6,10 +6,12 @@ import CareerSyncDashboard from './StudentDashboard'
 import CareerSyncAdminDashboard from './Admindashboard'
 
 createRoot(document.getElementById('root')).render(
+
+
   <BrowserRouter>
   <Routes>
     <Route path="/signin" element={<CareerSyncLogin/>}/>
-    <Route path="/stddashboard" element={<CareerSyncDashboard/>}/>
+    <Route path="/student-dashboard" element={<CareerSyncDashboard/>}/>
     <Route path="/admindashboard" element={<CareerSyncAdminDashboard/>}/>
   
   </Routes>
