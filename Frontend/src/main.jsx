@@ -4,7 +4,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import CareerSyncLogin from './Signin'
 import CareerSyncDashboard from './StudentDashboard'
 import CareerSyncAdminDashboard from './Admindashboard'
-
+import AddJob from './Addjob'
 createRoot(document.getElementById('root')).render(
 
 
@@ -13,7 +13,8 @@ createRoot(document.getElementById('root')).render(
     <Route path="/signin" element={<CareerSyncLogin/>}/>
     <Route path="/student-dashboard" element={<CareerSyncDashboard/>}/>
     <Route path="/admindashboard" element={<CareerSyncAdminDashboard/>}/>
-  
+    <Route path="/addjob" element={<AddJob />} />
+
   </Routes>
   </BrowserRouter>
 )
