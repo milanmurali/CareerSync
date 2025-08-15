@@ -12,6 +12,13 @@ node_modules/
 Backend/node_modules/
 Frontend/node_modules/
 
+
+
+# Node modules
+.env
+Backend/.env
+Frontend/.env
+
 # Build directories
 dist
 dist-ssr
