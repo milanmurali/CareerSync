@@ -31,7 +31,12 @@ const userSchema = new mongoose.Schema({
     education: [String],
     interests: [String],
     certificates: [String],
-    verified: { type: Boolean, default: false }
+    verified: {
+        type: String,
+        enum: ["Under Verification", "Verified", "Not Verified", "Rejected"],
+        default: "Not Verified"
+
+    }
 });
 
 const User = mongoose.model('User', userSchema);

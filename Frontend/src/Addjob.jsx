@@ -1,28 +1,19 @@
 import React, { useState } from "react";
-
-import { 
+import { Link, useNavigate } from "react-router-dom";
+import {
   ArrowLeft,
   Info,
-  DollarSign,
   FileText,
   List,
-  Users,
   Award,
-  Gift,
-  Mail,
-  Plus,
-  X,
   Menu,
   LayoutDashboard,
   UserCheck,
   Briefcase,
   Building,
   LogOut,
-  Calendar,
-  SidebarOpen
-} from 'lucide-react';
-
-
+  X, // Add this import
+} from "lucide-react";
 
 export default function AddJob() {
   const [companyName, setCompanyName] = useState("");
@@ -95,79 +86,91 @@ export default function AddJob() {
       setLoading(false);
     }
   };
-  const Sidebar = ({ sidebarOpen, setSidebarOpen }) => (
-    <>
-      {sidebarOpen && (
+
+  const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+      localStorage.removeItem("role");
+      localStorage.removeItem("token");
+      localStorage.removeItem("username");
+      navigate("/");
+    };
+
+    return (
+      <>
+        {sidebarOpen && (
+          <div
+            className="fixed inset-0 bg-black bg-opacity-50 z-20 lg:hidden"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-20 lg:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
-      <div
-        className={`fixed inset-y-0 left-0 z-30 w-64 bg-white shadow-lg border-r border-gray-200 flex flex-col transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 ${
-          sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
-      >
-        <div className="p-4 sm:p-6 border-b border-gray-200">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-semibold text-sm">CS</span>
+          className={`fixed inset-y-0 left-0 z-30 w-64 bg-white shadow-lg border-r border-gray-200 flex flex-col transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 ${
+            sidebarOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
+        >
+          <div className="p-4 sm:p-6 border-b border-gray-200">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
+                  <span className="text-white font-semibold text-sm">CS</span>
+                </div>
+                <span className="font-bold text-lg text-blue-600">Career Sync</span>
               </div>
-              <span className="font-bold text-lg text-blue-600">Career Sync</span>
+              <button
+                className="lg:hidden p-1 rounded-md hover:bg-gray-100"
+                onClick={() => setSidebarOpen(false)}
+              >
+                <X className="w-5 h-5" />
+              </button>
             </div>
+          </div>
+          <nav className="flex-1 px-3 sm:px-4 py-4 overflow-y-auto">
+            <div className="space-y-1 sm:space-y-2">
+              <Link
+                to="/admindashboard"
+                className="flex items-center space-x-3 text-gray-600 hover:text-gray-900 hover:bg-gray-50 px-3 py-2.5 rounded-lg transition-colors text-sm sm:text-base"
+              >
+                <LayoutDashboard className="w-4 h-4 sm:w-5 sm:h-5" />
+                <span>Dashboard</span>
+              </Link>
+              <Link
+                to="/verification"
+                className="flex items-center space-x-3 text-gray-600 hover:text-gray-900 hover:bg-gray-50 px-3 py-2.5 rounded-lg transition-colors text-sm sm:text-base"
+              >
+                <UserCheck className="w-4 h-4 sm:w-5 sm:h-5" />
+                <span>Student Verification</span>
+              </Link>
+              <Link
+                to="/addjob"
+                className="flex items-center space-x-3 text-blue-600 bg-blue-50 px-3 py-2.5 rounded-lg font-medium text-sm sm:text-base"
+              >
+                <Briefcase className="w-4 h-4 sm:w-5 sm:h-5" />
+                <span>Post Job</span>
+              </Link>
+              <Link
+                to="/managejob"
+                className="flex items-center space-x-3 text-gray-600 hover:text-gray-900 hover:bg-gray-50 px-3 py-2.5 rounded-lg transition-colors text-sm sm:text-base"
+              >
+                <Building className="w-4 h-4 sm:w-5 sm:h-5" />
+                <span>Manage Jobs</span>
+              </Link>
+            </div>
+          </nav>
+          <div className="p-3 sm:p-4 border-t border-gray-200">
             <button
-              className="lg:hidden p-1 rounded-md hover:bg-gray-100"
-              onClick={() => setSidebarOpen(false)}
+              onClick={handleLogout}
+              className="flex items-center space-x-3 text-gray-600 hover:bg-red-50 hover:text-red-600 px-3 py-2.5 rounded-lg transition-colors text-sm sm:text-base"
             >
-              <X className="w-5 h-5" />
+              <LogOut className="w-4 h-4 sm:w-5 sm:h-5" />
+              <span>Logout</span>
             </button>
           </div>
         </div>
-        <nav className="flex-1 px-3 sm:px-4 py-4 overflow-y-auto">
-          <div className="space-y-1 sm:space-y-2">
-            <a
-              href="#"
-              className="flex items-center space-x-3 text-gray-600 hover:text-gray-900 hover:bg-gray-50 px-3 py-2.5 rounded-lg transition-colors text-sm sm:text-base"
-            >
-              <LayoutDashboard className="w-4 h-4 sm:w-5 sm:h-5" />
-              <span>Dashboard</span>
-            </a>
-            <a
-              href="#"
-              className="flex items-center space-x-3 text-gray-600 hover:text-gray-900 hover:bg-gray-50 px-3 py-2.5 rounded-lg transition-colors text-sm sm:text-base"
-            >
-              <UserCheck className="w-4 h-4 sm:w-5 sm:h-5" />
-              <span>Student Verification</span>
-            </a>
-            <a
-              href="#"
-              className="flex items-center space-x-3 text-blue-600 bg-blue-50 px-3 py-2.5 rounded-lg font-medium text-sm sm:text-base"
-            >
-              <Briefcase className="w-4 h-4 sm:w-5 sm:h-5" />
-              <span>Post Job</span>
-            </a>
-            <a
-              href="#"
-              className="flex items-center space-x-3 text-gray-600 hover:text-gray-900 hover:bg-gray-50 px-3 py-2.5 rounded-lg transition-colors text-sm sm:text-base"
-            >
-              <Building className="w-4 h-4 sm:w-5 sm:h-5" />
-              <span>Manage Jobs</span>
-            </a>
-          </div>
-        </nav>
-        <div className="p-3 sm:p-4 border-t border-gray-200">
-          <a
-            href="#"
-            className="flex items-center space-x-3 text-gray-600 hover:text-gray-900 hover:bg-red-50 hover:text-red-600 px-3 py-2.5 rounded-lg transition-colors text-sm sm:text-base"
-          >
-            <LogOut className="w-4 h-4 sm:w-5 sm:h-5" />
-            <span>Logout</span>
-          </a>
-        </div>
-      </div>
-    </>
-  );
+      </>
+    );
+  };
 
   const SectionHeader = ({ icon: Icon, title, step }) => (
     <div className="flex items-center space-x-3 mb-4 sm:mb-6">
@@ -230,7 +233,6 @@ export default function AddJob() {
     </div>
   );
 
-  
   return (
     <div className="min-h-screen bg-gray-50 flex">
       <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />

@@ -22,6 +22,6 @@ app.use("/feedback", feedbackRouter);
 
 connectdb().then(() => {
     app.listen(PORT, () => {
-        console.log("Backend Server Running on localhost PORT:",PORT);
+        console.log(`Backend Server Running on http://127.0.0.1:${PORT}`);
     })
 })

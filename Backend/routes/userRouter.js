@@ -1,18 +1,21 @@
 import express from "express"
-import { deleteuser, initial, login, register, updateuser, viewAllUsers, viewuser } from "../controllers/userController.js"
+import { adminUpdateUser, deleteuser, login, register, updateuser, viewAllUsers, viewuser } from "../controllers/userController.js"
+import { requireAuth, requireRole } from "../middleware/auth.js"
 
 const userRouter = express.Router()
-
-userRouter.get("/initial", initial)
 
 userRouter.post("/register", register)
 userRouter.post("/login", login)
 
-userRouter.put("/update/:id", updateuser)
-userRouter.delete("/delete/:id", deleteuser)
+userRouter.put("/update/", requireAuth, updateuser)
 
-userRouter.get("/viewuser/:id", viewuser) 
-userRouter.get("/viewall/:id", viewAllUsers) 
+userRouter.delete("/delete/:id", requireAuth, deleteuser)
+
+userRouter.get("/viewuser/:id", requireAuth, viewuser)
+
+
+userRouter.put("/adminupdate/:id", requireAuth, requireRole, adminUpdateUser)
+userRouter.get("/viewall/:id", requireAuth, requireRole, viewAllUsers)
 
 
 export default userRouter

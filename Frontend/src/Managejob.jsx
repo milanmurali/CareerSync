@@ -22,11 +22,13 @@ import {
   Briefcase,
   LogOut
 } from 'lucide-react';
+import { Link, useNavigate } from "react-router-dom";
 
 export default function ManageJobsPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [statusFilter, setStatusFilter] = useState('All Status');
   const [categoryFilter, setCategoryFilter] = useState('All Categories');
+  const navigate = useNavigate();
 
   // Mock job data
   const [jobs] = useState([
@@ -123,6 +125,16 @@ export default function ManageJobsPage() {
     avgApplyRate: '14%'
   };
 
+  const handleLogout = () => {
+    // Clear user data from localStorage
+    localStorage.removeItem("role");
+    localStorage.removeItem("token");
+    localStorage.removeItem("username");
+
+    // Navigate to the login page
+    navigate("/");
+  };
+
   const Sidebar = () => (
     <>
       {/* Mobile sidebar backdrop */}
@@ -158,34 +170,49 @@ export default function ManageJobsPage() {
         {/* Navigation */}
         <nav className="flex-1 px-3 sm:px-4 py-4 overflow-y-auto">
           <div className="space-y-1 sm:space-y-2">
-            <a href="#" className="flex items-center space-x-3 text-gray-600 hover:text-gray-900 hover:bg-gray-50 px-3 py-2.5 sm:py-3 rounded-lg transition-colors text-sm sm:text-base">
+            <Link
+              to="/admindashboard"
+              className="flex items-center space-x-3 text-gray-600 hover:text-gray-900 hover:bg-gray-50 px-3 py-2.5 sm:py-3 rounded-lg transition-colors text-sm sm:text-base"
+            >
               <LayoutDashboard className="w-4 h-4 sm:w-5 sm:h-5" />
               <span>Dashboard</span>
-            </a>
-            
-            <a href="#" className="flex items-center space-x-3 text-gray-600 hover:text-gray-900 hover:bg-gray-50 px-3 py-2.5 sm:py-3 rounded-lg transition-colors text-sm sm:text-base">
+            </Link>
+
+            <Link
+              to="/verification"
+              className="flex items-center space-x-3 text-gray-600 hover:text-gray-900 hover:bg-gray-50 px-3 py-2.5 sm:py-3 rounded-lg transition-colors text-sm sm:text-base"
+            >
               <UserCheck className="w-4 h-4 sm:w-5 sm:h-5" />
               <span>Student Verification</span>
-            </a>
-            
-            <a href="#" className="flex items-center space-x-3 text-gray-600 hover:text-gray-900 hover:bg-gray-50 px-3 py-2.5 sm:py-3 rounded-lg transition-colors text-sm sm:text-base">
+            </Link>
+
+            <Link
+              to="/addjob"
+              className="flex items-center space-x-3 text-gray-600 hover:text-gray-900 hover:bg-gray-50 px-3 py-2.5 sm:py-3 rounded-lg transition-colors text-sm sm:text-base"
+            >
               <Briefcase className="w-4 h-4 sm:w-5 sm:h-5" />
               <span>Post Job</span>
-            </a>
-            
-            <a href="#" className="flex items-center space-x-3 text-blue-600 bg-blue-50 px-3 py-2.5 sm:py-3 rounded-lg font-medium text-sm sm:text-base">
+            </Link>
+
+            <Link
+              to="/managejob"
+              className="flex items-center space-x-3 text-blue-600 bg-blue-50 px-3 py-2.5 sm:py-3 rounded-lg font-medium text-sm sm:text-base"
+            >
               <Building className="w-4 h-4 sm:w-5 sm:h-5" />
               <span>Manage Jobs</span>
-            </a>
+            </Link>
           </div>
         </nav>
 
         {/* Bottom Navigation */}
         <div className="p-3 sm:p-4 border-t border-gray-200">
-          <a href="#" className="flex items-center space-x-3 text-gray-600 hover:text-gray-900 hover:bg-red-50 hover:text-red-600 px-3 py-2.5 rounded-lg transition-colors text-sm sm:text-base">
+          <button
+            onClick={handleLogout}
+            className="flex items-center space-x-3 text-gray-600 hover:bg-red-50 hover:text-red-600 px-3 py-2.5 rounded-lg transition-colors text-sm sm:text-base"
+          >
             <LogOut className="w-4 h-4 sm:w-5 sm:h-5" />
             <span>Logout</span>
-          </a>
+          </button>
         </div>
       </div>
     </>
@@ -357,7 +384,7 @@ export default function ManageJobsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
-      <Sidebar />
+      <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0">

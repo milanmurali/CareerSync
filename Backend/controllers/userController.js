@@ -5,11 +5,9 @@ import user from "../models/userSchema.js";
 import mongoose from "mongoose";
 
 
-export async function initial(req, res) {
-    res.send("YUPPPPPPP");
-}
 
-export async function login(req, res) { // Login Function
+// Login Function
+export async function login(req, res) { 
     try {
         let { email, password } = req.body;
         if (!email || !password) {
@@ -23,7 +21,11 @@ export async function login(req, res) { // Login Function
         if (!validpassword) {
             return res.status(401).json({ message: "Invalid Password" });
         }
-        const token = jwt.sign({ userid: userexists._id, email: userexists.email }, process.env.JWTKEY, { expiresIn: "1h" });
+        const token = jwt.sign(
+            { userId: userexists._id, email: userexists.email },
+            process.env.JWTKEY, { expiresIn: "24h" }
+        );
+
         return res.status(200).json(
             {
                 message: "Login Successful",
@@ -38,8 +40,8 @@ export async function login(req, res) { // Login Function
         return res.status(500).json({ message: "Internal Server Error", error });
     }
 }
-
-export async function register(req, res) { // Register Function
+// Register Function
+export async function register(req, res) { 
     try {
         let { name, email, password, mobile, dob, address } = req.body;
 
@@ -65,7 +67,9 @@ export async function register(req, res) { // Register Function
     }
 }
 
-export async function deleteuser(req, res) { // Delete Function
+
+// Delete Function
+export async function deleteuser(req, res) { 
     const id = req.params.id;
 
     try {
@@ -83,9 +87,55 @@ export async function deleteuser(req, res) { // Delete Function
 }
 
 
-export async function updateuser(req, res) { // Update Function 
-    const id = req.params.id;
+// Update Function 
+export async function updateuser(req, res) { 
+
+    const id = req.user.id;
+    if (!id) {
+        return res.status(400).json({ message: "User ID not provided. Try logging in again." });
+    }
+
     try {
+        // Check if the request body contains a role or verified field
+        if (req.body.role || req.body.verified) {
+            return res.status(403).json({ message: "You cannot update role or verification status" });
+        }
+        // Check if the request body contains a password field
+        if (req.body.password) {
+            const PSALT = parseInt(process.env.PSALT) || 10;
+            req.body.password = await bcrypt.hash(req.body.password, PSALT);
+        }
+
+        const response = await user.findByIdAndUpdate(id, req.body, { new: true });
+        if (!response) {
+            return res.status(404).json({ message: "User Not Found" });
+        }
+
+        // console.log(response);
+        return res.status(200).json({ message: "User Updated" });
+
+    } catch (error) {
+        console.error("Internal Server Error", error);
+        return res.status(500).json({ message: "Internal Server Error" });
+    }
+}
+
+// Admin Update Function 
+export async function adminUpdateUser(req, res) { 
+
+    const id = req.params.id;
+    if (!id) {
+        return res.status(400).json({ message: "User ID not provided" });
+    }
+    try {
+        // block everything except role, verified, password
+        const allowedFields = ["role", "verified", "password"];
+        const invalidField = Object.keys(req.body).find(
+            (key) => !allowedFields.includes(key)
+        );
+        if (invalidField) {
+            return res.status(403).json({ message: `Admins cannot update field: ${invalidField}` });
+        }
         // Check if the request body contains a password field
         if (req.body.password) {
             const PSALT = parseInt(process.env.PSALT) || 10;
@@ -107,7 +157,9 @@ export async function updateuser(req, res) { // Update Function
 }
 
 
-export async function viewuser(req, res) {  // View by ID Function
+
+// View by ID Function
+export async function viewuser(req, res) {  
     const id = req.params.id;
     try {
         const response = await user.findById(id);
@@ -123,7 +175,8 @@ export async function viewuser(req, res) {  // View by ID Function
 
 }
 
-export async function viewAllUsers(req, res) {  // View All Users Function
+// View All Users Function
+export async function viewAllUsers(req, res) {  
     try {
 
         const { id } = req.params; // Extract admin ID from request params
@@ -151,4 +204,6 @@ export async function viewAllUsers(req, res) {  // View All Users Function
         return res.status(500).json({ message: "Internal Server Error" });
     }
 }
+
+
 

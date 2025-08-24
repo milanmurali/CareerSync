@@ -27,6 +27,7 @@ import {
   Menu,
   X
 } from 'lucide-react';
+import { Link, useNavigate } from "react-router-dom";
 
 // API Configuration
 const API_BASE_URL = `http://localhost:6969`;
@@ -88,6 +89,7 @@ export default function CareerSyncAdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [selectedTimeframe, setSelectedTimeframe] = useState('week');
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchDashboardData();
@@ -110,6 +112,16 @@ export default function CareerSyncAdminDashboard() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleLogout = () => {
+    // Remove user data from localStorage
+    localStorage.removeItem("role");
+    localStorage.removeItem("token");
+    localStorage.removeItem("username");
+
+    // Navigate to the login page
+    navigate("/");
   };
 
   const StatCard = ({ title, value, change, icon: Icon, color, suffix = '' }) => (
@@ -159,91 +171,117 @@ export default function CareerSyncAdminDashboard() {
     );
   };
 
-  const Sidebar = () => (
-    <>
-      {/* Mobile sidebar backdrop */}
-      {sidebarOpen && (
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-50 z-20 lg:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
-      
-      {/* Sidebar */}
-      <div className={`fixed inset-y-0 left-0 z-30 w-64 bg-white shadow-lg border-r border-gray-200 flex flex-col transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 ${
-        sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-      }`}>
-        {/* Sidebar Header */}
-        <div className="p-4 sm:p-6 border-b border-gray-200 lg:border-b-0">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-semibold text-sm">CS</span>
+  const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+      localStorage.removeItem("role");
+      localStorage.removeItem("token");
+      localStorage.removeItem("username");
+      navigate("/");
+    };
+
+    return (
+      <>
+        {/* Mobile sidebar backdrop */}
+        {sidebarOpen && (
+          <div 
+            className="fixed inset-0 bg-black bg-opacity-50 z-20 lg:hidden"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
+        
+        {/* Sidebar */}
+        <div className={`fixed inset-y-0 left-0 z-30 w-64 bg-white shadow-lg border-r border-gray-200 flex flex-col transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 ${
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}>
+          {/* Sidebar Header */}
+          <div className="p-4 sm:p-6 border-b border-gray-200 lg:border-b-0">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
+                  <span className="text-white font-semibold text-sm">CS</span>
+                </div>
+                <span className="font-bold text-lg sm:text-xl text-gray-900">Career Sync</span>
               </div>
-              <span className="font-bold text-lg sm:text-xl text-gray-900">Career Sync</span>
+              <button 
+                className="lg:hidden p-1 rounded-md hover:bg-gray-100"
+                onClick={() => setSidebarOpen(false)}
+              >
+                <X className="w-5 h-5" />
+              </button>
             </div>
-            <button 
-              className="lg:hidden p-1 rounded-md hover:bg-gray-100"
-              onClick={() => setSidebarOpen(false)}
-            >
-              <X className="w-5 h-5" />
-            </button>
+            <p className="text-xs sm:text-sm text-gray-500 mt-1">Admin Dashboard</p>
           </div>
-          <p className="text-xs sm:text-sm text-gray-500 mt-1">Admin Dashboard</p>
+
+          {/* Navigation */}
+          <nav className="flex-1 px-3 sm:px-4 py-4 overflow-y-auto">
+            <div className="space-y-1 sm:space-y-2">
+              <Link
+                to="/admindashboard"
+                className="flex items-center space-x-3 text-gray-600 hover:text-gray-900 hover:bg-gray-50 px-3 py-2.5 rounded-lg transition-colors text-sm sm:text-base"
+              >
+                <LayoutDashboard className="w-4 h-4 sm:w-5 sm:h-5" />
+                <span>Dashboard</span>
+              </Link>
+              
+              <Link
+                to="/verification"
+                className="flex items-center space-x-3 text-gray-600 hover:text-gray-900 hover:bg-gray-50 px-3 py-2.5 rounded-lg transition-colors text-sm sm:text-base"
+              >
+                <UserCheck className="w-4 h-4 sm:w-5 sm:h-5" />
+                <span>Student Verification</span>
+              </Link>
+              
+              <Link
+                to="/addjob"
+                className="flex items-center space-x-3 text-gray-600 hover:text-gray-900 hover:bg-gray-50 px-3 py-2.5 rounded-lg transition-colors text-sm sm:text-base"
+              >
+                <Briefcase className="w-4 h-4 sm:w-5 sm:h-5" />
+                <span>Post Job</span>
+              </Link>
+              
+              <Link
+                to="/managejob"
+                className="flex items-center space-x-3 text-gray-600 hover:text-gray-900 hover:bg-gray-50 px-3 py-2.5 rounded-lg transition-colors text-sm sm:text-base"
+              >
+                <Building className="w-4 h-4 sm:w-5 sm:h-5" />
+                <span>Manage Jobs</span>
+              </Link>
+
+              {/* <a href="#" className="flex items-center space-x-3 text-gray-600 hover:text-gray-900 hover:bg-gray-50 px-3 py-2.5 sm:py-3 rounded-lg transition-colors text-sm sm:text-base">
+                <Users className="w-4 h-4 sm:w-5 sm:h-5" />
+                <span>User Management</span>
+              </a>
+
+              <a href="#" className="flex items-center space-x-3 text-gray-600 hover:text-gray-900 hover:bg-gray-50 px-3 py-2.5 sm:py-3 rounded-lg transition-colors text-sm sm:text-base">
+                <FileText className="w-4 h-4 sm:w-5 sm:h-5" />
+                <span>Reports</span>
+              </a> */}
+            </div>
+          </nav>
+
+          {/* Bottom Navigation */}
+          <div className="p-3 sm:p-4 border-t border-gray-200">
+            <div className="space-y-1">
+              <a href="#" className="flex items-center space-x-3 text-gray-600 hover:text-gray-900 hover:bg-gray-50 px-3 py-2.5 rounded-lg transition-colors text-sm sm:text-base">
+                <Settings className="w-4 h-4 sm:w-5 sm:h-5" />
+                <span>Settings</span>
+              </a>
+              
+              <button
+                onClick={handleLogout}
+                className="flex items-center space-x-3 text-gray-600 hover:text-gray-900 hover:bg-red-50 px-3 py-2.5 rounded-lg transition-colors text-sm sm:text-base"
+              >
+                <LogOut className="w-4 h-4 sm:w-5 sm:h-5" />
+                <span>Logout</span>
+              </button>
+            </div>
+          </div>
         </div>
-
-        {/* Navigation */}
-        <nav className="flex-1 px-3 sm:px-4 py-4 overflow-y-auto">
-          <div className="space-y-1 sm:space-y-2">
-            <a href="#" className="flex items-center space-x-3 text-blue-600 bg-blue-50 px-3 py-2.5 sm:py-3 rounded-lg font-medium text-sm sm:text-base">
-              <LayoutDashboard className="w-4 h-4 sm:w-5 sm:h-5" />
-              <span>Dashboard</span>
-            </a>
-            
-            <a href="#" className="flex items-center space-x-3 text-gray-600 hover:text-gray-900 hover:bg-gray-50 px-3 py-2.5 sm:py-3 rounded-lg transition-colors text-sm sm:text-base">
-              <UserCheck className="w-4 h-4 sm:w-5 sm:h-5" />
-              <span>Student Verification</span>
-            </a>
-            
-            <a href="#" className="flex items-center space-x-3 text-gray-600 hover:text-gray-900 hover:bg-gray-50 px-3 py-2.5 sm:py-3 rounded-lg transition-colors text-sm sm:text-base">
-              <Briefcase className="w-4 h-4 sm:w-5 sm:h-5" />
-              <span>Post Job</span>
-            </a>
-            
-            <a href="#" className="flex items-center space-x-3 text-gray-600 hover:text-gray-900 hover:bg-gray-50 px-3 py-2.5 sm:py-3 rounded-lg transition-colors text-sm sm:text-base">
-              <Building className="w-4 h-4 sm:w-5 sm:h-5" />
-              <span>Manage Jobs</span>
-            </a>
-
-            <a href="#" className="flex items-center space-x-3 text-gray-600 hover:text-gray-900 hover:bg-gray-50 px-3 py-2.5 sm:py-3 rounded-lg transition-colors text-sm sm:text-base">
-              <Users className="w-4 h-4 sm:w-5 sm:h-5" />
-              <span>User Management</span>
-            </a>
-
-            <a href="#" className="flex items-center space-x-3 text-gray-600 hover:text-gray-900 hover:bg-gray-50 px-3 py-2.5 sm:py-3 rounded-lg transition-colors text-sm sm:text-base">
-              <FileText className="w-4 h-4 sm:w-5 sm:h-5" />
-              <span>Reports</span>
-            </a>
-          </div>
-        </nav>
-
-        {/* Bottom Navigation */}
-        <div className="p-3 sm:p-4 border-t border-gray-200">
-          <div className="space-y-1">
-            <a href="#" className="flex items-center space-x-3 text-gray-600 hover:text-gray-900 hover:bg-gray-50 px-3 py-2.5 rounded-lg transition-colors text-sm sm:text-base">
-              <Settings className="w-4 h-4 sm:w-5 sm:h-5" />
-              <span>Settings</span>
-            </a>
-            
-            <a href="#" className="flex items-center space-x-3 text-gray-600 hover:text-gray-900 hover:bg-red-50 hover:text-red-600 px-3 py-2.5 rounded-lg transition-colors text-sm sm:text-base">
-              <LogOut className="w-4 h-4 sm:w-5 sm:h-5" />
-              <span>Logout</span>
-            </a>
-          </div>
-        </div>
-      </div>
-    </>
-  );
+      </>
+    );
+  };
 
   if (loading) {
     return (
@@ -257,8 +295,8 @@ export default function CareerSyncAdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
-      <Sidebar />
+    <div className="h-screen bg-gray-50 flex">
+      <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0">
@@ -329,7 +367,7 @@ export default function CareerSyncAdminDashboard() {
           {/* Main Content Grid */}
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6">
             {/* Applications by Category */}
-            <div className="xl:col-span-2 bg-white rounded-xl p-4 sm:p-6 shadow-sm border border-gray-100">
+            <div className="xl:col-span-3 bg-white rounded-xl p-4 sm:p-6 shadow-sm border border-gray-100">
               <div className="flex items-center justify-between mb-4 sm:mb-6">
                 <h3 className="text-base sm:text-lg font-semibold text-gray-900">Applications by Category</h3>
                 <button className="text-blue-600 text-xs sm:text-sm hover:text-blue-700 font-medium">View All</button>
@@ -364,7 +402,7 @@ export default function CareerSyncAdminDashboard() {
             </div>
 
             {/* Recent Activities */}
-            <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm border border-gray-100">
+            {/* <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm border border-gray-100">
               <div className="flex items-center justify-between mb-4 sm:mb-6">
                 <h3 className="text-base sm:text-lg font-semibold text-gray-900">Recent Activities</h3>
                 <button className="text-blue-600 text-xs sm:text-sm hover:text-blue-700 font-medium">View All</button>
@@ -375,11 +413,11 @@ export default function CareerSyncAdminDashboard() {
                   <ActivityItem key={activity.id} activity={activity} />
                 ))}
               </div>
-            </div>
+            </div> */}
           </div>
 
           {/* Quick Actions */}
-          <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm border border-gray-100">
+          {/* <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm border border-gray-100">
             <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">Quick Actions</h3>
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
               <button 
@@ -422,7 +460,9 @@ export default function CareerSyncAdminDashboard() {
                 <span className="font-medium text-orange-900 text-xs sm:text-sm text-center sm:text-left">View Reports</span>
               </button>
             </div>
-          </div>
+          </div> */}
+
+
         </div>
       </div>
     </div>

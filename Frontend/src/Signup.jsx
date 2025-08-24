@@ -1,65 +1,70 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import dotenv from "dotenv";
 
-
-export default function CareerSyncLogin() {
-
-  const navigate = useNavigate();
-
-  const BACKEND_HOST = import.meta.env.VITE_BACKEND_HOST;
-
-  const [logindata, setLogindata] = useState({ email: "", password: "" });
+export default function CareerSyncSignup() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [username, setUsername] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
+  const navigate = useNavigate();
 
-  const submit = async (event) => {
-    
-    event.preventDefault();
-
+  const handleSubmit = async () => {
     setLoading(true);
     setError("");
     setSuccess("");
 
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
+      setLoading(false);
+      return;
+    }
+
     try {
+      // Retrieve existing users from localStorage
+      const users = JSON.parse(localStorage.getItem("users")) || [];
 
-      const response = await axios.post(`${BACKEND_HOST}/user/login`, logindata);
-      console.log(response);
-
-      // Save token + role for subsequent requests
-      localStorage.setItem("token", response.data.token);
-      localStorage.setItem("role", response.data.role);
-      localStorage.setItem("userId", response.data.id);
-
-      setSuccess("Login successful! Redirecting...");
-
-      if (response.data.role === "admin") {
-        navigate("/admin-dashboard");
-      } else {
-        navigate("/student-dashboard");
+      // Check if the email is already registered
+      const existingUser = users.find((u) => u.email === email);
+      if (existingUser) {
+        setError("Email is already registered.");
+        setLoading(false);
+        return;
       }
 
-    } catch (err) {
-      console.log("Error Occured", error);
-      // toast.error(error.response.data.message || error.message);
+      // Create a new user
+      const newUser = {
+        id: `user${users.length + 1}`,
+        email,
+        password,
+        username,
+        role: "student", // Default role for signup
+        token: `token-${Date.now()}`,
+      };
 
-      const msg = err?.response?.data?.message || err?.response?.data?.error || err?.message || "Login failed";
-      console.error("Login error:", err);
-      setError(msg);
+      // Save the new user to localStorage
+      users.push(newUser);
+      localStorage.setItem("users", JSON.stringify(users));
+
+      setSuccess("Signup successful! Redirecting to login...");
+
+      // Redirect to login page
+      setTimeout(() => {
+        navigate("/");
+      }, 1000);
+    } catch (err) {
+      console.error("Signup error:", err);
+      setError("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
-
-
   };
 
   return (
     <div className="min-h-screen flex">
-
-
       {/* Left Side - Branding */}
       <div className="flex-1 bg-gradient-to-br from-sky-400 via-teal-400 to-yellow-300 flex items-center justify-center p-12 relative overflow-hidden">
         <div className="absolute inset-0 opacity-20">
@@ -82,15 +87,34 @@ export default function CareerSyncLogin() {
         </div>
       </div>
 
-      {/* Right Side - Login Form */}
+      {/* Right Side - Signup Form */}
       <div className="flex-1 bg-white flex items-center justify-center p-12">
         <div className="w-full max-w-md">
           <div className="bg-white rounded-2xl shadow-2xl p-8 border border-gray-100">
             <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center">
-              Welcome Back
+              Create an Account
             </h2>
 
             <div className="space-y-6">
+              {/* Username Field */}
+              <div>
+                <label
+                  htmlFor="username"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  Username
+                </label>
+                <input
+                  type="text"
+                  id="username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="Enter your username"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all duration-200 text-gray-700 placeholder-gray-400"
+                  required
+                />
+              </div>
+
               {/* Email Field */}
               <div>
                 <label
@@ -102,8 +126,8 @@ export default function CareerSyncLogin() {
                 <input
                   type="email"
                   id="email"
-                  value={logindata.email}
-                  onChange={(e) => setLogindata({ ...logindata, email: e.target.value })}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter your email"
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all duration-200 text-gray-700 placeholder-gray-400"
                   required
@@ -119,38 +143,60 @@ export default function CareerSyncLogin() {
                   Password
                 </label>
                 <input
-                  type="text"
+                  type="password"
                   id="password"
-                  value={logindata.password}
-                  onChange={(e) => setLogindata({ ...logindata, password: e.target.value })}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your password"
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all duration-200 text-gray-700 placeholder-gray-400"
                   required
                 />
               </div>
 
-              {/* Show errors/success */}
-              {error && <p className="text-red-500 text-sm text-center">{error}</p>}
-              {success && <p className="text-green-600 text-sm text-center">{success}</p>}
+              {/* Confirm Password Field */}
+              <div>
+                <label
+                  htmlFor="confirmPassword"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  Confirm Password
+                </label>
+                <input
+                  type="password"
+                  id="confirmPassword"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Confirm your password"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all duration-200 text-gray-700 placeholder-gray-400"
+                  required
+                />
+              </div>
 
-              {/* Sign In Button */}
+              {/* Show errors/success */}
+              {error && <p className="text-red-500 text-sm">{error}</p>}
+              {success && <p className="text-green-600 text-sm">{success}</p>}
+
+              {/* Sign Up Button */}
               <button
-                onClick={submit}
+                onClick={handleSubmit}
                 disabled={loading}
                 className="w-full bg-gradient-to-r from-sky-500 to-sky-600 text-white py-3 px-4 rounded-lg font-medium hover:from-sky-600 hover:to-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50"
               >
-                {loading ? "Signing in..." : "Sign In"}
+                {loading ? "Signing up..." : "Sign Up"}
               </button>
 
-              {/* Forgot Password */}
-              {/* <div className="text-center">
-                <a
-                  href="#"
-                  className="text-sm text-sky-500 hover:text-sky-600 transition-colors duration-200"
-                >
-                  Forgot your password?
-                </a>
-              </div> */}
+              {/* Already have an account */}
+              <div className="text-center">
+                <p className="text-sm text-gray-500">
+                  Already have an account?{" "}
+                  <span
+                    onClick={() => navigate("/")}
+                    className="text-sky-500 hover:text-sky-600 transition-colors duration-200 cursor-pointer"
+                  >
+                    Log in here
+                  </span>
+                </p>
+              </div>
             </div>
 
             {/* Footer */}
@@ -158,17 +204,6 @@ export default function CareerSyncLogin() {
               <p className="text-xs text-gray-500 text-center mb-2">
                 2025 Career Sync. All rights reserved.
               </p>
-              <div className="text-center">
-                <p className="text-xs text-gray-500">
-                  Don't have an account?{" "}
-                  <span
-                    onClick={() => navigate("/signup")}
-                    className="text-sky-500 hover:text-sky-600 transition-colors duration-200 cursor-pointer"
-                  >
-                    Sign up here
-                  </span>
-                </p>
-              </div>
             </div>
           </div>
         </div>

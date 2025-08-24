@@ -15,16 +15,35 @@ import {
   Menu,
   X
 } from 'lucide-react';
+import { useNavigate } from "react-router-dom";
 
 export default function CareerSyncDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1024);
+  const [username, setUsername] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  useEffect(() => {
+    // Retrieve the username from localStorage
+    const storedUsername = localStorage.getItem("username");
+    setUsername(storedUsername || "Guest");
+  }, []);
+
+  const handleLogout = () => {
+    // Remove user data from localStorage
+    localStorage.removeItem("role");
+    localStorage.removeItem("token");
+    localStorage.removeItem("username");
+
+    // Navigate to the login page
+    navigate("/");
+  };
 
   const isMobile = windowWidth < 768;
   const isSmall = windowWidth < 640;
@@ -90,13 +109,18 @@ export default function CareerSyncDashboard() {
           </div>
           
           <div className="mt-auto px-4 pt-8">
-            <a href="#" className="flex items-center space-x-3 text-gray-600 hover:text-gray-900 hover:bg-gray-50 px-3 py-2 rounded-lg">
+            <a 
+              onClick={handleLogout}
+              className="flex items-center space-x-3 text-gray-600 hover:text-gray-900 hover:bg-gray-50 px-3 py-2 rounded-lg cursor-pointer"
+            >
               <LogOut className="w-5 h-5" />
               <span>Logout</span>
             </a>
           </div>
         </nav>
       </div>
+
+
 
       {/* Main Content */}
       <div className="flex-1 lg:ml-0">
@@ -114,9 +138,21 @@ export default function CareerSyncDashboard() {
             </div>
             <div className="flex items-center space-x-3">
               <div className="w-8 h-8 bg-gray-300 rounded-full"></div>
-              <span className="text-sm font-medium text-gray-900 hidden sm:inline">Sarah Johnson</span>
-              <svg className="w-4 h-4 text-gray-500 hidden sm:inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
+              <span className="text-sm font-medium text-gray-900 hidden sm:inline">
+                {username}
+              </span>
+              <svg
+                className="w-4 h-4 text-gray-500 hidden sm:inline"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M19 9l-7 7-7-7"
+                ></path>
               </svg>
             </div>
           </div>
@@ -129,7 +165,7 @@ export default function CareerSyncDashboard() {
             <div className={`flex ${isMobile ? 'flex-col space-y-4' : 'flex-row justify-between items-center'}`}>
               <div className={isMobile ? 'text-center' : ''}>
                 <h2 className={`font-bold mb-2 ${isSmall ? 'text-lg' : 'text-xl lg:text-2xl'}`}>
-                  Welcome back, Sarah!
+                  Welcome back, {username}!
                 </h2>
                 <p className={`text-blue-100 mb-4 ${isSmall ? 'text-sm' : 'text-base'}`}>
                   Ready to take the next step in your career journey?
