@@ -8,6 +8,15 @@ const jobSchema = new mongoose.Schema({
     description: String,
     requiredSkills: [String],
     minCGPA: Number,
+    interviews: [
+        {
+            studentId: String,
+            date: String,
+            time: String,
+            mode: String,
+            status: { type: String, enum: ["Scheduled", "Completed", "Cancelled"], default: "Scheduled" }
+        }
+    ],
     location: String,
     type: String,
     applied: [String],

@@ -1,5 +1,6 @@
 import express from "express";
-import { createJob, getAllJobs, getJobById, updateJob, deleteJob, applyForJob, updateApplicationStatus, getStudentApplications } from "../controllers/listingController.js";
+import { createJob, getAllJobs, getJobById, updateJob, deleteJob, applyForJob, updateApplicationStatus, getStudentApplications, getStudentDashboardData } from "../controllers/listingController.js";
+import { requireAuth } from "../middleware/auth.js";
 
 const listingRouter = express.Router();
 
@@ -15,6 +16,8 @@ listingRouter.post("/apply", applyForJob);
 listingRouter.put("/application-status", updateApplicationStatus);
 
 // Get all jobs a student has applied to
-listingRouter.get("/student-applications/:studentId", getStudentApplications);
+// listingRouter.get("/student-applications/:studentId", getStudentApplications);
+
+listingRouter.get("/student-dashboard/:id", getStudentDashboardData);
 
 export default listingRouter;

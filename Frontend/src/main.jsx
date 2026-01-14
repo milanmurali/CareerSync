@@ -16,8 +16,12 @@ createRoot(document.getElementById('root')).render(
   <BrowserRouter>
     <Routes>
       <Route path="/" element={<CareerSyncLogin />} />
-      <Route path="/signup" element={<CareerSyncSignup />} /> {/* Add the Signup route */}
+      <Route path="/login" element={<CareerSyncLogin />} />
+      <Route path="/signup" element={<CareerSyncSignup />} />
+
       <Route path="/dashboard" element={<CareerSyncDashboard />} />
+
+
       <Route path="/admindashboard" element={<CareerSyncAdminDashboard />} />
       <Route path="/addjob" element={<AddJob />} />
       <Route path="/managejob" element={<ManageJobsPage />} />

@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import dotenv from "dotenv";
 
 
 export default function CareerSyncLogin() {
@@ -17,7 +16,7 @@ export default function CareerSyncLogin() {
 
 
   const submit = async (event) => {
-    
+
     event.preventDefault();
 
     setLoading(true);
@@ -30,6 +29,8 @@ export default function CareerSyncLogin() {
       console.log(response);
 
       // Save token + role for subsequent requests
+
+      localStorage.setItem("name", response.data.name);
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("role", response.data.role);
       localStorage.setItem("userId", response.data.id);
@@ -39,11 +40,11 @@ export default function CareerSyncLogin() {
       if (response.data.role === "admin") {
         navigate("/admin-dashboard");
       } else {
-        navigate("/student-dashboard");
+        navigate("/dashboard");
       }
 
     } catch (err) {
-      console.log("Error Occured", error);
+      console.log("Error Occured", err);
       // toast.error(error.response.data.message || error.message);
 
       const msg = err?.response?.data?.message || err?.response?.data?.error || err?.message || "Login failed";
@@ -90,7 +91,7 @@ export default function CareerSyncLogin() {
               Welcome Back
             </h2>
 
-            <div className="space-y-6">
+            <form onSubmit={submit} className="space-y-6">
               {/* Email Field */}
               <div>
                 <label
@@ -120,6 +121,7 @@ export default function CareerSyncLogin() {
                 </label>
                 <input
                   type="text"
+                  // type="password"
                   id="password"
                   value={logindata.password}
                   onChange={(e) => setLogindata({ ...logindata, password: e.target.value })}
@@ -135,7 +137,7 @@ export default function CareerSyncLogin() {
 
               {/* Sign In Button */}
               <button
-                onClick={submit}
+                type="submit"
                 disabled={loading}
                 className="w-full bg-gradient-to-r from-sky-500 to-sky-600 text-white py-3 px-4 rounded-lg font-medium hover:from-sky-600 hover:to-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50"
               >
@@ -151,7 +153,7 @@ export default function CareerSyncLogin() {
                   Forgot your password?
                 </a>
               </div> */}
-            </div>
+            </form>
 
             {/* Footer */}
             <div className="mt-8 pt-6 border-t border-gray-200">

@@ -1,6 +1,6 @@
-import mongoose from "mongoose";    
+import mongoose from "mongoose";
 import JobListing from "../models/listingSchema.js";
-
+import user from "../models/userSchema.js";
 
 export async function createJob(req, res) {
     try {
@@ -117,7 +117,7 @@ export async function updateApplicationStatus(req, res) {
 export async function getStudentApplications(req, res) {
     try {
         const { studentId } = req.params;
-        
+
         if (!studentId) {
             return res.status(400).json({ message: "Student ID is required" });
         }
@@ -164,3 +164,82 @@ export async function getStudentApplications(req, res) {
         res.status(500).json({ message: "Internal Server Error" });
     }
 }
+
+
+export async function getStudentDashboardData(req, res) {
+    try {
+        
+        const studentId = req.params.id;
+        // const { studentId } = req.user.id;
+
+        if (!studentId) {
+            return res.status(400).json({ message: "Student ID is required" });
+        }
+
+        // 1. Fetch user
+        const User = await user.findById(studentId);
+        if (!User) return res.status(404).json({ message: "User not found" });
+
+        // 2. Calculate profile score dynamically
+        const profileScore = (() => {
+            let score = 0;
+            if (User.skills?.length) score += 25;
+            if (User.education?.length) score += 25;
+            if (User.certificates?.length) score += 25;
+            if (User.interests?.length) score += 25;
+            return score;
+        })();
+
+        // 3. Calculate rating dynamically (placeholder: random or based on interviews completed)
+        const completedInterviews = await JobListing.find({ "interviews.studentId": studentId, "interviews.status": "Completed" });
+        const rating = completedInterviews.length ? 4.5 : 0; // Replace with actual rating logic later
+
+        // 4. Get applications data
+        const appliedJobs = await JobListing.find({ applied: studentId });
+        const selectedJobs = await JobListing.find({ selected: studentId });
+        const rejectedJobs = await JobListing.find({ rejected: studentId });
+
+        // 5. Upcoming interviews
+        const upcomingInterviews = await JobListing.find({
+            "interviews.studentId": studentId,
+            "interviews.status": "Scheduled"
+        }).select("title companyName interviews");
+
+        // Filter only this student's interviews
+        const userUpcomingInterviews = upcomingInterviews.map(job => {
+            const interview = job.interviews.find(i => i.studentId === studentId && i.status === "Scheduled");
+            return {
+                jobId: job._id,
+                title: job.title,
+                companyName: job.companyName,
+                date: interview.date,
+                time: interview.time,
+                mode: interview.mode
+            };
+        });
+
+        // 6. Response
+        res.status(200).json({
+            message: "Dashboard data retrieved successfully",
+            profile: {
+                name: User.name,
+                profileScore,
+                rating
+            },
+            stats: {
+                applied: appliedJobs.length,
+                interviews: userUpcomingInterviews.length,
+                totalApplications: appliedJobs.length + selectedJobs.length + rejectedJobs.length
+            },
+            upcomingInterviews: userUpcomingInterviews,
+            recentApplications: appliedJobs.slice(-5).reverse()
+        });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+}
+
+
+

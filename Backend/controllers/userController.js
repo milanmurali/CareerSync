@@ -31,6 +31,7 @@ export async function login(req, res) {
                 message: "Login Successful",
                 token,
                 id: userexists._id,
+                name: userexists.name,
                 role: userexists.role
             }
         );
