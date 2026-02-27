@@ -6,7 +6,6 @@ import axios from "axios";
 export default function CareerSyncLogin() {
 
   const navigate = useNavigate();
-
   const BACKEND_HOST = import.meta.env.VITE_BACKEND_HOST;
 
   const [logindata, setLogindata] = useState({ email: "", password: "" });
@@ -16,7 +15,6 @@ export default function CareerSyncLogin() {
 
 
   const submit = async (event) => {
-
     event.preventDefault();
 
     setLoading(true);
@@ -24,11 +22,8 @@ export default function CareerSyncLogin() {
     setSuccess("");
 
     try {
-
       const response = await axios.post(`${BACKEND_HOST}/user/login`, logindata);
       console.log(response);
-
-      // Save token + role for subsequent requests
 
       localStorage.setItem("name", response.data.name);
       localStorage.setItem("token", response.data.token);
